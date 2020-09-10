@@ -1,95 +1,71 @@
-import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import React from "react";
+import { Link, useHistory } from "react-router-dom";
 import PageDefault from "../../../components/PageDefault";
 import FormField from "../../../components/FormField";
 import Button from "../../../components/Button";
+import useForm from "../../../hooks/useForm";
+import categoriasRepository from "../../../repositories/categorias";
 
 function CadastroCategoria() {
+  const history = useHistory();
+
   const valoresIniciais = {
-    nome: "",
-    descricao: "",
+    titulo: "",
+    // descricao: "",
     cor: "",
   };
 
-  const [categorias, setCategorias] = useState([]);
-  const [values, setValues] = useState(valoresIniciais);
+  const { handleChange, values, clearForm } = useForm(valoresIniciais);
+  // const [categorias, setCategorias] = useState([]);
 
-  function setValue(chave, valor) {
-    setValues({
-      ...values,
-      [chave]: valor,
-    });
-  }
+  // useEffect(() => {
+  //   const URL = window.location.hostname.includes("localhost")
+  //     ? "http://localhost:8080/categorias"
+  //     : "https://thibonsanflix.herokuapp.com/categorias";
 
-  function handleChange(infosDoEvento) {
-    setValue(
-      infosDoEvento.target.getAttribute("name"),
-      infosDoEvento.target.value,
-    );
-  }
-
-  useEffect(() => {
-    const URL = window.location.hostname.includes("localhost")
-      ? "http://localhost:8080/categorias"
-      : "https://thibonsanflix.herokuapp.com/categorias";
-
-    fetch(URL).then(async (resposta) => {
-      const r = await resposta.json();
-      setCategorias([...r]);
-    });
-
-    // setTimeout(() => {
-    //   setCategorias([
-    //     ...categorias,
-    //     {
-    //       id: 1,
-    //       nome: "Front End",
-    //       descricao: "Uma categoria bacanuda",
-    //       cor: "#cbd1ff",
-    //     },
-    //     {
-    //       id: 1,
-    //       nome: "Back End",
-    //       descricao: "Outra categoria bacanuda",
-    //       cor: "#cbd1ff",
-    //     },
-    //   ]);
-    // }, 4 * 1000);
-  }, []);
+  //   fetch(URL).then(async (resposta) => {
+  //     const r = await resposta.json();
+  //     setCategorias([...r]);
+  //   });
+  // }, []);
 
   return (
     <PageDefault>
       <h1>
         Cadastro de Categoria:
-        {values.nome}
+        {values.titulo}
       </h1>
 
-      <form onSubmit={function handleSubmit(infosDoEvento) {
-        infosDoEvento.preventDefault();
-        setCategorias([
-          ...categorias,
-          values,
-        ]);
+      <form onSubmit={(event) => {
+        event.preventDefault();
 
-        setValues(valoresIniciais);
+        categoriasRepository.create(values)
+          .then(() => history.push("/"));
+
+        clearForm();
+
+        // setCategorias([
+        //   ...categorias,
+        //   values,
+        // ]);
       }}
       >
 
         <FormField
-          label="Nome da Categoria"
+          label="Título da Categoria"
           type="text"
-          name="nome"
-          value={values.nome}
+          name="titulo"
+          value={values.titulo}
           onChange={handleChange}
         />
 
-        <FormField
+        {/* <FormField
           label="Descrição:"
           type="textarea"
           name="descricao"
           value={values.descricao}
           onChange={handleChange}
-        />
+        /> */}
 
         <FormField
           label="Cor"
@@ -104,7 +80,7 @@ function CadastroCategoria() {
         </Button>
       </form>
 
-      {categorias.length === 0 && (
+      {/* {categorias.length === 0 && (
         <div>
           Loading...
         </div>
@@ -112,11 +88,11 @@ function CadastroCategoria() {
 
       <ul>
         {categorias.map((categoria) => (
-          <li key={`${categoria.nome}`}>
-            {categoria.nome}
+          <li key={`${categoria.titulo}`}>
+            {categoria.titulo}
           </li>
         ))}
-      </ul>
+      </ul> */}
 
       <Link to="/">
         Ir para home
